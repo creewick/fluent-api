@@ -1,18 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ObjectPrinting
 {
-    public class PropertySerializer<TOwner, TType>
+    public class PropertyPriningConfig<TOwner, TType> : IPropertyPrintingConfig<TOwner>
     {
         private readonly PrintingConfig<TOwner> printingConfig;
         private readonly MemberInfo memberInfo;
 
-        public PropertySerializer(PrintingConfig<TOwner> printingConfig, MemberInfo memberInfo)
+        PrintingConfig<TOwner> IPropertyPrintingConfig<TOwner>
+            .PrintingConfig => printingConfig;
+        MemberInfo IPropertyPrintingConfig<TOwner>
+            .MemberInfo => memberInfo;
+
+        public PropertyPriningConfig(PrintingConfig<TOwner> printingConfig, MemberInfo memberInfo)
         {
             this.printingConfig = printingConfig;
             this.memberInfo = memberInfo;

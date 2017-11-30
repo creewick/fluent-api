@@ -12,12 +12,16 @@ namespace ObjectPrinting
     {
         static void Main()
         {
-            var person = new Person { Name = "Alex", Age = 19, Height = 20.5 };
+            var person = new Person { Name = "Alex", Age = 19, A = new A { B = 0.2 } };
 
             var printer = ObjectPrinter.For<Person>()
-                .Excluding(p => p.Name);
+                .Printing<A>()
+                .Using(p => p.ToString())
+                .Printing<double>()
+                .Using(CultureInfo.CurrentCulture);
             string s1 = printer.PrintToString(person);
-
+            
+            
             Console.WriteLine(s1);
             Console.ReadLine();
         }
