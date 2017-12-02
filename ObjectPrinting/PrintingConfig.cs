@@ -10,8 +10,8 @@ namespace ObjectPrinting
 {
     public class PrintingConfig<TOwner> : IPrintingConfig
     {
-        private List<Type> excludedTypes = new List<Type>();
-        private List<MemberInfo> excludedFields = new List<MemberInfo>();
+        private HashSet<Type> excludedTypes = new HashSet<Type>();
+        private HashSet<MemberInfo> excludedFields = new HashSet<MemberInfo>();
         private Dictionary<Type, Func<object, string>> alternativeSerializersByType =
             new Dictionary<Type, Func<object, string>>();
         private Dictionary<MemberInfo, Func<object, string>> alternativeSerializersByName =
@@ -22,12 +22,11 @@ namespace ObjectPrinting
                 typeof(DateTime), typeof(TimeSpan)
         };
 
-
         Dictionary<Type, Func<object, string>> IPrintingConfig.AlternativeSerializersByType => alternativeSerializersByType;
         Dictionary<MemberInfo, Func<object, string>> IPrintingConfig.AlternativeSerializersByName => alternativeSerializersByName;
         HashSet<Type> IPrintingConfig.FinalTypes => finalTypes;
-        List<Type> IPrintingConfig.ExcludedTypes => excludedTypes;
-        List<MemberInfo> IPrintingConfig.ExcludedFields => excludedFields;
+        HashSet<Type> IPrintingConfig.ExcludedTypes => excludedTypes;
+        HashSet<MemberInfo> IPrintingConfig.ExcludedFields => excludedFields;
 
         public PrintingConfig<TOwner> ExcludeType<T>()
         {
@@ -38,11 +37,6 @@ namespace ObjectPrinting
         public TypePrintingConfig<TOwner, T> Printing<T>()
         {
             return new TypePrintingConfig<TOwner, T>(this);
-        }
-
-        public string PrintToString(TOwner obj)
-        {
-            return ((IObjectPrinter)new ObjectPrinter()).PrintToString(this, obj, 0);
         }
 
         public PrintingConfig<TOwner> Excluding<T>(Expression<Func<TOwner, T>> pr)
@@ -75,6 +69,11 @@ namespace ObjectPrinting
         {
             var member = pr.Body as MemberExpression;
             return new PropertyPriningConfig<TOwner, T>(this, member.Member);
+        }
+
+        public ObjectPrinter Build()
+        {
+            return new ObjectPrinter(this);
         }
     }
 }

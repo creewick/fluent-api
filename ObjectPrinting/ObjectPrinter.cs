@@ -3,22 +3,32 @@ using System.Text;
 
 namespace ObjectPrinting
 {
-    public class ObjectPrinter : IObjectPrinter
-	{
-        string IObjectPrinter.PrintToString(IPrintingConfig config, object obj, int height) => PrintToString(config, obj, height);
+    public class ObjectPrinter
+    {
+        private static IPrintingConfig printingConfig;
 
-	    public static PrintingConfig<T> For<T>()
-	    {
+        public ObjectPrinter(IPrintingConfig config)
+        {
+            printingConfig = config;
+        }
+
+        public static PrintingConfig<T> For<T>()
+        {
             return new PrintingConfig<T>();
         }
 
-        private static string PrintToString(IPrintingConfig config, object obj, int nestingLevel)
+        public string PrintToString(object obj)
+        {
+            return PrintToString(obj, 0);
+        }
+
+        private string PrintToString(object obj, int nestingLevel)
         {
             if (obj == null)
                 return "null" + Environment.NewLine;
 
             var type = obj.GetType();
-            if (type.IsPrimitive || type.IsEnum || config.FinalTypes.Contains(type))
+            if (type.IsPrimitive || type.IsEnum || printingConfig.FinalTypes.Contains(type))
                 return obj + Environment.NewLine;
 
             var identation = new string('\t', nestingLevel + 1);
@@ -26,17 +36,18 @@ namespace ObjectPrinting
             sb.AppendLine(type.Name);
             foreach (var propertyInfo in type.GetProperties())
             {
-                if (!config.ExcludedTypes.Contains(propertyInfo.PropertyType) && !config.ExcludedFields.Contains(propertyInfo))
-                {
-                    var value = PrintToString(config, propertyInfo.GetValue(obj), nestingLevel + 1);
-                    if (config.AlternativeSerializersByType.ContainsKey(propertyInfo.PropertyType))
-                        value = config.AlternativeSerializersByType[propertyInfo.PropertyType](propertyInfo.GetValue(obj)) + Environment.NewLine;
-                    if (config.AlternativeSerializersByName.ContainsKey(propertyInfo))
-                        value = config.AlternativeSerializersByName[propertyInfo](propertyInfo.GetValue(obj)) + Environment.NewLine;
-                    sb.Append(identation + propertyInfo.Name + " = " + value);
-                }
+                if (printingConfig.ExcludedTypes.Contains(propertyInfo.PropertyType) ||
+                    printingConfig.ExcludedFields.Contains(propertyInfo)) continue;
+                string value;
+                if (printingConfig.AlternativeSerializersByType.ContainsKey(propertyInfo.PropertyType))
+                    value = printingConfig.AlternativeSerializersByType[propertyInfo.PropertyType](propertyInfo.GetValue(obj)) + Environment.NewLine;
+                else if (printingConfig.AlternativeSerializersByName.ContainsKey(propertyInfo))
+                    value = printingConfig.AlternativeSerializersByName[propertyInfo](propertyInfo.GetValue(obj)) + Environment.NewLine;
+                else
+                    value = PrintToString(propertyInfo.GetValue(obj), nestingLevel + 1);
+                sb.Append(identation + propertyInfo.Name + " = " + value);
             }
             return sb.ToString();
         }
-    }
+}
 }

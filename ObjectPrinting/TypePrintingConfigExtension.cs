@@ -13,7 +13,6 @@ namespace ObjectPrinting
         public static PrintingConfig<TOwner> Cut<TOwner>(this TypePrintingConfig<TOwner, string> config, int length)
         {
             return config
-                .Printing<string>()
                 .Using(str => str.Substring(0, Math.Min(length, str.Length)));
         }
     }

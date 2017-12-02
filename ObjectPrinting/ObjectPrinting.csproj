@@ -54,7 +54,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="INumber.cs" />
     <Compile Include="IObjectPrinter.cs" />
     <Compile Include="IPrintingConfig.cs" />
     <Compile Include="IPropertyPrintingConfig.cs" />

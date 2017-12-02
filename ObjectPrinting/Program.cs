@@ -18,7 +18,8 @@ namespace ObjectPrinting
                 .Printing<A>()
                 .Using(p => p.ToString())
                 .Printing<double>()
-                .Using(CultureInfo.CurrentCulture);
+                .Using(CultureInfo.CurrentCulture)
+                .Build();
             string s1 = printer.PrintToString(person);
             
             

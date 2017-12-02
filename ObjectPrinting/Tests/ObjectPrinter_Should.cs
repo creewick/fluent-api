@@ -18,7 +18,8 @@ namespace ObjectPrinting.Tests
         public void ExcludeType()
         {
             var printer = ObjectPrinter.For<Person>()
-                .ExcludeType<int>();
+                .ExcludeType<int>()
+                .Build();
             printer.PrintToString(person).Should().NotContain("Age");
         }
 
@@ -27,7 +28,8 @@ namespace ObjectPrinting.Tests
         {
             var printer = ObjectPrinter.For<Person>()
                 .Printing<int>()
-                .Using(n => 42.ToString());
+                .Using(n => 42.ToString())
+                .Build();
             printer.PrintToString(person).Should().Contain("Age = 42");
         }
 
@@ -36,7 +38,8 @@ namespace ObjectPrinting.Tests
         {
             var printer = ObjectPrinter.For<Person>()
                 .Printing<double>()
-                .Using(new CultureInfo("ru-RU"));
+                .Using(new CultureInfo("ru-RU"))
+                .Build();
             printer.PrintToString(person).Should().Contain("Height = 120,5");
         }
 
@@ -45,7 +48,8 @@ namespace ObjectPrinting.Tests
         {
             var printer = ObjectPrinter.For<Person>()
                 .Printing(p => p.Age)
-                .Using(n => 42.ToString());
+                .Using(n => 42.ToString())
+                .Build();
             printer.PrintToString(person).Should().Contain("Age = 42");
         }
 
@@ -54,7 +58,8 @@ namespace ObjectPrinting.Tests
         {
             var printer = ObjectPrinter.For<Person>()
                 .Printing(p => p.Name)
-                .Cut(2);
+                .Cut(2)
+                .Build();
             printer.PrintToString(person).Should().Contain("Name = Al\r\n");
         }
 
@@ -62,7 +67,8 @@ namespace ObjectPrinting.Tests
         public void ExcludingMember()
         {
             var printer = ObjectPrinter.For<Person>()
-                .Excluding(p => p.Age);
+                .Excluding(p => p.Age)
+                .Build();
             printer.PrintToString(person).Should().NotContain("Age");
         }
     }
