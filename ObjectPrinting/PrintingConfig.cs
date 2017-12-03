@@ -46,7 +46,12 @@ namespace ObjectPrinting
             return this;
         }
 
-        public PrintingConfig<TOwner> ByDefault()
+        public ObjectPrinter ByDefault()
+        {
+            return Defaults().Build();
+        }
+
+        private PrintingConfig<TOwner> Defaults()
         {
             return Printing<double>()
                 .Using(new CultureInfo("en-US"))
@@ -60,9 +65,9 @@ namespace ObjectPrinting
                 .Cut(20);
         }
 
-        public PrintingConfig<TOwner> ByDefault<T>(Func<T, string> config)
+        public ObjectPrinter ByDefault(Func<PrintingConfig<TOwner>, PrintingConfig<TOwner>> func)
         {
-            return ByDefault().Printing<T>().Using(config);
+            return func(Defaults()).Build();
         }
 
         public PropertyPriningConfig<TOwner, T> Printing<T>(Expression<Func<TOwner, T>> pr)

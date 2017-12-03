@@ -15,6 +15,7 @@ namespace ObjectPrinting
             var person = new Person { Name = "Alex", Age = 19, A = new A { B = 0.2 } };
 
             var printer = ObjectPrinter.For<Person>()
+                .ByDefault()
                 .Printing<A>()
                 .Using(p => p.ToString())
                 .Printing<double>()

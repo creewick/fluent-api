@@ -48,12 +48,14 @@ namespace ObjectPrinting.Tests
             //7. Синтаксический сахар в виде метода расширения, сериализующего по-умолчанию
             string s7 = ObjectPrinter.For<Person>()
                         .ByDefault()
-                        .Build()
                         .PrintToString(person);
             //8. ...с конфигурированием
             string s8 = ObjectPrinter.For<Person>()
-                        .ByDefault<int>(n => 42.ToString())
-                        .Build()
+                        .ByDefault(config => config
+                            .Printing<string>()
+                                .Cut(20)
+                            .Printing<int>()
+                                .Using(n => (2*n).ToString()))
                         .PrintToString(person);
         }
 	}
